@@ -38,8 +38,9 @@ public class MongoServiceVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(QUESTION_ALL, message -> {
 
             FindOptions findOptions = new FindOptions();
-            findOptions.setFields(new JsonObject().put("question", "1")
-                    .put("username", "2").put("postTime", "3"));
+            findOptions.setFields(
+                    new JsonObject().put("question", "1").put("username", "2")
+                            .put("postTime", "3").put("description", "4"));
 
             client.findWithOptions(QUESTION_COLLECTION, new JsonObject(),
                     findOptions, res -> {
