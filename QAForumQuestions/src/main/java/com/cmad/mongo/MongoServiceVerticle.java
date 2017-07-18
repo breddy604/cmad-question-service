@@ -60,8 +60,9 @@ public class MongoServiceVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(QUESTION_SEARCH, message -> {
 
             FindOptions findOptions = new FindOptions();
-            findOptions.setFields(new JsonObject().put("question", 1)
-                    .put("username", 1).put("postTime", 1));
+            findOptions.setFields(
+                    new JsonObject().put("question", 1).put("username", 2)
+                            .put("postTime", 3).put("description", 4));
 
             System.out.println("Search for question which contains "
                     + message.body().toString());
