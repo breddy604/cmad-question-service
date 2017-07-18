@@ -41,6 +41,7 @@ public class MongoServiceVerticle extends AbstractVerticle {
             findOptions.setFields(
                     new JsonObject().put("question", "1").put("username", "2")
                             .put("postTime", "3").put("description", "4"));
+            findOptions.setLimit(10);
 
             client.findWithOptions(QUESTION_COLLECTION, new JsonObject(),
                     findOptions, res -> {
