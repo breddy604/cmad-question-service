@@ -84,24 +84,38 @@ public class QAForumMainVerticle extends AbstractVerticle {
                         }
                     });
         });
-        
-        
+
         router.get("/question/filter/by/").handler(rctx -> {
 
-            vertx.eventBus().send(QUESTION_SEARCH, rctx.request().getParam("question"),
-                    res -> {
-                        System.out.println("Result for search question "
-                                + res.result().body());
+            if (rctx.request().getParam("question") != null) {
+                vertx.eventBus().send(QUESTION_SEARCH,
+                        rctx.request().getParam("question"), res -> {
+                            System.out.println("Result for search question "
+                                    + res.result().body());
 
-                        if (res.result().body().toString().isEmpty()) {
-                            rctx.response().setStatusCode(200).end();
-                        } else {
-                            rctx.response().setStatusCode(200)
-                                    .putHeader("Content-Type",
-                                            "application/json")
-                                    .end(res.result().body().toString());
-                        }
-                    });
+                            if (res.result().body().toString().isEmpty()) {
+                                rctx.response().setStatusCode(200).end();
+                            } else {
+                                rctx.response().setStatusCode(200)
+                                        .putHeader("Content-Type",
+                                                "application/json")
+                                        .end(res.result().body().toString());
+                            }
+                        });
+            } else {
+                vertx.eventBus().send(QUESTION_ALL_LIMIT, "", res -> {
+                    System.out.println(
+                            "Result for top questions " + res.result().body());
+
+                    if (res.result().body().toString().isEmpty()) {
+                        rctx.response().setStatusCode(200).end();
+                    } else {
+                        rctx.response().setStatusCode(200)
+                                .putHeader("Content-Type", "application/json")
+                                .end(res.result().body().toString());
+                    }
+                });
+            }
         });
 
         router.get("/question/").handler(rctx -> {

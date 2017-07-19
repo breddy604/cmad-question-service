@@ -8,6 +8,7 @@ import static com.cmad.util.CmadUtils.*;
 
 public class MongoServiceVerticle extends AbstractVerticle {
 
+
     @Override
     public void start() throws Exception {
 
@@ -35,13 +36,14 @@ public class MongoServiceVerticle extends AbstractVerticle {
                     });
         });
 
-        vertx.eventBus().consumer(QUESTION_ALL, message -> {
+        vertx.eventBus().consumer(QUESTION_ALL_LIMIT, message -> {
 
             FindOptions findOptions = new FindOptions();
             findOptions.setFields(
                     new JsonObject().put("question", "1").put("username", "2")
                             .put("postTime", "3").put("description", "4"));
             findOptions.setLimit(10);
+            findOptions.setSort(new JsonObject().put("postTime",-1));
 
             client.findWithOptions(QUESTION_COLLECTION, new JsonObject(),
                     findOptions, res -> {
@@ -57,6 +59,29 @@ public class MongoServiceVerticle extends AbstractVerticle {
                         }
                     });
         });
+        
+        vertx.eventBus().consumer(QUESTION_ALL, message -> {
+
+            FindOptions findOptions = new FindOptions();
+            findOptions.setFields(
+                    new JsonObject().put("question", "1").put("username", "2")
+                            .put("postTime", "3").put("description", "4"));
+            findOptions.setSort(new JsonObject().put("postTime",-1));
+
+            client.findWithOptions(QUESTION_COLLECTION, new JsonObject(),
+                    findOptions, res -> {
+                        if (res.succeeded()) {
+                            if (res.result().size() != 0) {
+                                message.reply(res.result().toString());
+                            } else {
+                                message.reply("");
+                            }
+                        } else {
+                            res.cause().printStackTrace();
+                            message.reply("");
+                        }
+                    });
+        });        
 
         vertx.eventBus().consumer(QUESTION_SEARCH, message -> {
 
@@ -64,6 +89,7 @@ public class MongoServiceVerticle extends AbstractVerticle {
             findOptions.setFields(
                     new JsonObject().put("question", 1).put("username", 2)
                             .put("postTime", 3).put("description", 4));
+            findOptions.setSort(new JsonObject().put("postTime", -1));
 
             System.out.println("Search for question which contains "
                     + message.body().toString());
